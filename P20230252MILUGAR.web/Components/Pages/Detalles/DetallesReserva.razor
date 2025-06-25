@@ -1,0 +1,98 @@
+﻿@page "/reserva/detalle/{id:int}"
+@using P20230252MILUGAR.web.Data.Dtos
+@using Microsoft.AspNetCore.Identity
+@using P20230252MILUGAR.web.Data.Services
+@using P20230252MILUGAR.web.Data
+
+@inject IReservaServices ReservaService
+@inject IApartamentoServices ApartamentoService
+@inject UserManager<ApplicationUser> UserManager
+
+@code {
+    [Parameter] public int id { get; set; }
+    private ReservaDtos? reserva;
+    private ApartamentoDtos? apartamento;
+    private ApplicationUser? propietario;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            reserva = await ReservaService.ObtenerReservaPorIdAsync(id);
+            if (reserva == null) return;
+
+            apartamento = ApartamentoService.Consultar().FirstOrDefault(x => x.Id == reserva.ApartamentoId);
+            if (apartamento == null) return;
+
+            if (!string.IsNullOrWhiteSpace(apartamento.PropietarioId))
+            {
+                propietario = await UserManager.FindByIdAsync(apartamento.PropietarioId);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ ERROR: {ex.Message}");
+        }
+    }
+}
+
+@if (reserva == null)
+{
+    <div class="alert alert-danger">❌ No se encontró la reserva con ID @id.</div>
+}
+else if (apartamento == null)
+{
+    <div class="alert alert-warning">❌ No se encontró el apartamento asociado.</div>
+}
+else
+{
+    <div class="card p-4">
+        <h2 class="mb-3">📄 Detalles de tu Reserva</h2>
+
+        <p>
+            <strong>Estado actual:</strong>
+            <span class="badge @(reserva.Estado == "Pendiente" ? "bg-warning text-dark" : "bg-success")">
+                @reserva.Estado
+            </span>
+        </p>
+
+        <hr />
+
+        <h4 class="mt-3">🏠 Apartamento Reservado</h4>
+        <p><strong>Título:</strong> @apartamento.Titulo</p>
+        <p><strong>Dirección:</strong> @apartamento.Ciudad, @apartamento.Direccion</p>
+        <p><strong>Precio:</strong> RD$@apartamento.PrecioMesual / mes</p>
+
+        <h4 class="mt-3">👤 Propietario</h4>
+        <p><strong>Nombre:</strong> @propietario?.Nombre</p>
+        @if (!string.IsNullOrWhiteSpace(propietario?.Email))
+        {
+            <p>
+                <strong>Correo:</strong>
+                <a href="mailto:@propietario.Email" class="text-decoration-underline">@propietario.Email</a>
+            </p>
+        }
+        @if (!string.IsNullOrWhiteSpace(propietario?.PhoneNumber))
+        {
+            <p>
+                <strong>WhatsApp:</strong>
+                <a href="https://wa.me/@(propietario.PhoneNumber?.Replace("+", "").Replace(" ", ""))" target="_blank" class="text-decoration-underline">
+                    @propietario.PhoneNumber
+                </a>
+            </p>
+        }
+
+        <h4 class="mt-3">📅 Fecha de solicitud</h4>
+        <p>@reserva.FechaSolicitud.ToString("dddd dd 'de' MMMM yyyy - hh:mm tt")</p>
+
+        <h4 class="mt-4">📜 Políticas del Contrato</h4>
+        <div class="alert alert-info">
+            <ul>
+                <li>Esta reserva está en estado <strong>Pendiente</strong> hasta que el propietario la confirme.</li>
+                <li>Recibirás una notificación cuando el estado cambie a <strong>Aceptada</strong> o <strong>Rechazada</strong>.</li>
+                <li>El pago y la visita al apartamento serán coordinados con el propietario.</li>
+                <li>La reserva puede ser cancelada si no se recibe respuesta en 48 horas.</li>
+            </ul>
+        </div>
+    </div>
+}

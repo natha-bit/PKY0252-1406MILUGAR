@@ -1,0 +1,323 @@
+﻿.perfil-container {
+    max-width: 1900px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.perfil-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    justify-content: flex-start;
+    position: relative;
+}
+
+.foto-perfil {
+    flex-direction: column;
+    width: 80px;
+    height: 80px;
+    border: 2px solid #5cd900;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #5cd900;
+}
+
+.rol {
+    color: #5cd900;
+    margin-top: -8px;
+}
+
+.btn-editar {
+    background: #5cd900;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+.info-box {
+    margin-bottom: 2rem;
+}
+
+.info-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+    .info-list li {
+        padding: 6px 0;
+        font-size: 15px;
+    }
+
+.link-cambiar {
+    display: inline-block;
+    margin-top: 10px;
+    color: #3a7bd5;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.vendedor-box {
+    margin: 1rem 0;
+    background: #f2f2f2;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    align-content: center;
+}
+
+.publicaciones-box {
+    margin-top: 2rem;
+}
+
+.publicacion {
+    padding: 1rem;
+    border-top: 1px solid #ccc;
+}
+
+.modal-politicas {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 350px;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    transform: translate(-50%, -50%);
+    z-index: 1001;
+}
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 1000;
+}
+
+.publicacion {
+    position: relative;
+}
+
+.publicacion-actions-vertical {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.btn-borrar {
+    background: #e53935;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 8px;
+    transition: background 0.2s;
+}
+
+    .btn-borrar:hover {
+        background: #b71c1c;
+    }
+.btnVendedor {
+    background: none;
+    border: none;
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    font: inherit;
+}
+.logout-form {
+    margin-left: auto;
+    display: flex;
+    align-items: flex-start;
+    height: 100%;
+}
+
+.btn-logout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #dc3545;
+    color: #fff;
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
+    margin-left: 0;
+    margin-top: 0;
+    cursor: pointer;
+    transition: background 0.2s;
+    line-height: 1.1;
+    white-space: pre-line;
+}
+    .btn-logout:hover {
+        background-color: #b52a37;
+    }
+
+.btn-login {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #5cd900;
+    color: #fff;
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
+    margin-left: 0;
+    margin-top: 0;
+    cursor: pointer;
+    transition: background 0.2s;
+    line-height: 1.1;
+    white-space: pre-line;
+}
+    .btn-login:hover {
+        background-color: #50bd00;
+    }
+
+.reserva-card {
+    background-color: #fff;
+    border: 1.5px solid #d9f0d2;
+    border-radius: 12px;
+    padding: 20px 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    max-width: 100%;
+    font-size: 15px;
+}
+
+.reserva-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.badge-estado {
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    display: inline-block;
+}
+
+    .badge-estado.pendiente {
+        background-color: #ffeb99;
+        color: #7a5e00;
+    }
+
+    .badge-estado.aceptada {
+        background-color: #c8f7c5;
+        color: #2e7d32;
+    }
+
+    .badge-estado.rechazada {
+        background-color: #ffcaca;
+        color: #9e1e1e;
+    }
+
+.boton-vermas {
+    margin-left: auto;
+}
+
+.btn-vermas {
+    background-color: #7ED957;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 15px;
+    text-decoration: none;
+    box-shadow: none;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+}
+
+    .btn-vermas:hover {
+        background-color: #64c44e;
+    }
+
+
+
+/* Tarjeta de publicación */
+.publicacion {
+    position: relative;
+    background-color: #fff;
+    border: 1.5px solid #d9f0d2;
+    border-radius: 12px;
+    padding: 20px 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    font-size: 15px;
+    color: #333;
+}
+
+/* Botones verticales en la esquina superior derecha */
+.publicacion-actions-vertical {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Botón editar */
+.btn-editar {
+    background-color: #7ED957;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 16px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    .btn-editar:hover {
+        background-color: #64c44e;
+    }
+
+/* Botón borrar */
+.btn-borrar {
+    background-color: #ff6b6b;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 16px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    .btn-borrar:hover {
+        background-color: #e63946;
+    }

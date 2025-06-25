@@ -1,0 +1,54 @@
+﻿@inject NavigationManager NavigationManager
+@implements IDisposable
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+
+<header class="bg-white border-bottom shadow-sm">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <img src="images/logo.png" alt="Logo" style="height: 60px;" />
+        </a>
+        <nav class="d-flex justify-content-center w-100">
+            <ul class="nav gap-4">
+                <li class="nav-item">
+                    <NavLink class="nav-link text-success fw-semibold" href="/">INICIO</NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link text-success fw-semibold" href="/sobre-nosotros">SOBRE NOSOTROS</NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link text-success fw-semibold" href="/servicios">SERVICIOS</NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link text-success fw-semibold" href="/contacto">CONTACTO</NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link text-success fw-semibold d-flex align-items-center" href="/Perfil">
+                        <i class="bi bi-person-circle me-1"></i> PERFIL
+                    </NavLink>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+@code {
+    private string? currentUrl;
+
+    protected override void OnInitialized()
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}

@@ -1,0 +1,255 @@
+﻿@page "/perfil"
+
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IApartamentoServices ApartamentoService
+@inject NavigationManager Navigation
+@inject IReservaServices ReservaService
+@inject IJSRuntime JS
+
+
+@using System.Globalization
+@using P20230252MILUGAR.web.Data
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Identity
+@using P20230252MILUGAR.web.Data.Dtos
+@using P20230252MILUGAR.web.Data.Services
+@rendermode InteractiveServer
+
+
+<div class="perfil-container">
+    <div class="perfil-header">
+        <div class="foto-perfil">
+            <span></span>
+        </div>
+        <div>
+            <h2>@Nombre</h2>
+            <p class="rol">@Rol</p>
+            <button type="button" class="btn-editar">✏️ EDITAR PERFIL</button>
+        </div>
+        @if (isAuthenticated)
+        {
+            <form class="logout-form" action="Account/Logout" method="post">
+                <AntiforgeryToken />
+                <input type="hidden" name="ReturnUrl" value="Account/Login" />
+                <button type="submit" class="btn-logout">CERRAR SESIÓN</button>
+            </form>
+        }
+        else
+        {
+            <form class="logout-form"   >
+            <button type="button" class="btn-login" @onclick="Login">INICIAR SESIÓN</button>
+            </form>
+        }
+    </div>
+    <div class="info-box">
+        <h4>Información personal</h4>
+        <ul class="info-list">
+            <li><span>📧</span>@Email</li>
+            <li><span>📞</span> @Telefono</li>
+        </ul>
+        <a class="link-cambiar">🔑 Cambiar contraseña</a>
+    </div>
+
+
+    @if (!esVendedor)
+    {
+        <div class="vendedor-box">
+            <button type="button" class="btnVendedor" @onclick="MostrarModal">Conviértete en vendedor</button>
+        </div>
+    }
+    @if (esVendedor)
+    {
+    <button type="button" class="btn-editar" disabled="@(!esVendedor)" @onclick="IrACrearApartamento">
+        ✏️ PUBLICAR APARTAMENTO
+    </button>
+    <div class="publicaciones-box">
+        <h4>Mis Publicaciones</h4>
+
+        @if (MisApartamentos.Count == 0)
+        {
+            <p>No tienes publicaciones aún.</p>
+        }
+        else
+        {
+            @foreach (var ap in MisApartamentos)
+            {
+                <div class="publicacion" style="position: relative;">
+                    <p><strong>@ap.Titulo</strong></p>
+                    <p>Estado: @(ap.Disponibilidad ? "Publicado" : "No disponible")</p>
+                    <p>Visitas: (poner visitas si lo manejas)</p>
+                    <div class="publicacion-actions-vertical">
+                        <button class="btn-editar" title="Editar" @onclick="() => EditarApartamento(ap.Id)">
+                            ✏️
+                        </button>
+                        <button class="btn-borrar" title="Borrar" @onclick="() => BorrarApartamento(ap.Id)">
+                            🗑️
+                        </button>
+                    </div>
+                </div>
+
+            }
+        }
+    </div>
+    <br/>
+    }
+    <div class="reservas-box">
+        <h4>Mis Reservas</h4>
+        @if (MisReservas.Count == 0)
+        {
+            <p>No tienes reservas activas.</p>
+        }
+        else
+        {
+            @foreach (var reserva in MisReservas)
+            {
+                <div class="reserva-card">
+                    <div class="reserva-info">
+                        <div>
+                            <p><strong>Apartamento:</strong> SDA</p>
+                            <p>
+                                <strong>Estado:</strong>
+                                <span class="badge-estado pendiente">Pendiente</span>
+                            </p>
+                        </div>
+
+                        <div class="boton-vermas">
+                            <button class="btn-vermas"
+                                    @onclick="() => IrADetalleReserva(reserva.Id)">
+                                Ver más
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    @if (mostrarConvertirse)
+    {
+        <div class="modal-politicas">
+            <h5>Políticas de Privacidad</h5>
+            <p>Debes aceptar nuestras políticas para convertirte en vendedor.</p>
+            <div>
+                <input type="checkbox" @bind="aceptaPoliticas" /> Acepto las políticas de privacidad
+            </div>
+            <button @onclick="ConfirmarVendedor" class="btn btn-success" disabled="@(aceptaPoliticas == false)">Aceptar</button>
+            <button @onclick="() => mostrarConvertirse = false" class="btn btn-danger">Cancelar</button>
+        </div>
+    }
+</div>
+
+
+
+@code {
+    private string? currentUrl;
+    private string? Nombre;
+    private string? Email;
+    private string? Telefono;
+    private string? Rol;
+    private List<ApartamentoDtos> MisApartamentos = new();
+    private bool isAuthenticated;
+    private List<ReservaDtos> MisReservas = new();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        currentUrl = Navigation.ToBaseRelativePath(Navigation.Uri);
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        isAuthenticated = user.Identity is not null && user.Identity.IsAuthenticated;
+
+        if (user.Identity is not null && user.Identity.IsAuthenticated)
+        {
+            var appUser = await UserManager.GetUserAsync(user);
+            if (appUser != null)
+            {
+                Nombre = appUser.Nombre;
+                Email = appUser.Email;
+                Telefono = appUser.PhoneNumber;
+                Rol = appUser.Rol == "Vendedor" ? "Vendedor" : "Cliente";
+                esVendedor = appUser.Rol == "Vendedor";
+
+
+                MisApartamentos = ApartamentoService.ConsultarPorUsuarioId(appUser.Id);
+                MisReservas = await ReservaService.CosultarId(appUser.Id);
+                MisReservas = MisReservas.Where(r => r.Estado != "Cancelada").ToList();
+            }
+        }
+    }
+
+    private bool mostrarConvertirse = false;
+    private bool aceptaPoliticas = false;
+    private bool esVendedor = false;
+
+    private async Task ConfirmarVendedor()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity is not null && user.Identity.IsAuthenticated)
+        {
+            var appUser = await UserManager.GetUserAsync(user);
+            if (appUser != null)
+            {
+                appUser.Rol = "Vendedor";
+                await UserManager.UpdateAsync(appUser);
+
+                esVendedor = true;
+                Rol = "Vendedor";
+            }
+        }
+
+        mostrarConvertirse = false;
+        aceptaPoliticas = false;
+        StateHasChanged(); 
+    }
+
+
+
+    private void MostrarModal() => mostrarConvertirse = true;
+
+    private void IrACrearApartamento()
+    {
+        Navigation.NavigateTo("Apartamentos");
+    }
+
+
+    private void EditarApartamento(int id)
+    {
+        Navigation.NavigateTo($"/Apartamentos/{id}");
+    }
+
+    private async Task BorrarApartamento(int id)
+    {
+        if (await JS.InvokeAsync<bool>("confirm", "¿Estás seguro de que deseas borrar este apartamento?"))
+        {
+            var eliminado = ApartamentoService.Eliminar(id);
+            if (eliminado)
+            {
+                var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+                var user = authState.User;
+                var appUser = await UserManager.GetUserAsync(user);
+                if (appUser != null)
+                {
+                    MisApartamentos = ApartamentoService.ConsultarPorUsuarioId(appUser.Id);
+                    StateHasChanged();
+                }
+            }
+        }
+    }
+
+    private void Login()
+    {
+        Navigation.NavigateTo("/Account/Login");
+    }
+
+    private void IrADetalleReserva(int reservaId)
+    {
+        Navigation.NavigateTo($"/reserva/detalle/{reservaId}");
+    }
+
+
+
+
+}

@@ -1,0 +1,73 @@
+﻿@page "/reservar-apartamento"
+
+@inject NavigationManager Navigation
+
+<h2 class="titulo-principal">Reservar Apartamento</h2>
+
+<EditForm Model="@reserva" OnValidSubmit="EnviarReserva">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-section">
+        <h3>Datos del Cliente</h3>
+        <div class="form-grid">
+            <div>
+                <label>Nombre Completo</label>
+                <InputText @bind-Value="reserva.Nombre" class="form-control" />
+            </div>
+            <div>
+                <label>Teléfono</label>
+                <InputText @bind-Value="reserva.Telefono" class="form-control" />
+            </div>
+            <div>
+                <label>Correo Electrónico</label>
+                <InputText @bind-Value="reserva.Correo" class="form-control" />
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h3>Detalles de la Reserva</h3>
+        <div class="form-grid">
+            <div>
+                <label>Fecha de Entrada</label>
+                <InputDate @bind-Value="reserva.FechaEntrada" class="form-control" />
+            </div>
+            <div>
+                <label>Fecha de Salida</label>
+                <InputDate @bind-Value="reserva.FechaSalida" class="form-control" />
+            </div>
+            <div>
+                <label>Número de Personas</label>
+                <InputNumber @bind-Value="reserva.CantidadPersonas" class="form-control" />
+            </div>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn-submit">Confirmar Reserva</button>
+    </div>
+</EditForm>
+
+@code {
+    private ReservaDto reserva = new();
+
+    private void EnviarReserva()
+    {
+        // Lógica para guardar o enviar reserva
+        Console.WriteLine("Reserva enviada:");
+        Console.WriteLine($"{reserva.Nombre}, {reserva.FechaEntrada} - {reserva.FechaSalida}");
+        Navigation.NavigateTo("/"); // Puedes redirigir a otra página después
+    }
+
+    public class ReservaDto
+    {
+        public string Nombre { get; set; }
+        public string Telefono { get; set; }
+        public string Correo { get; set; }
+        public DateTime FechaEntrada { get; set; } = DateTime.Today;
+        public DateTime FechaSalida { get; set; } = DateTime.Today.AddDays(1);
+        public int CantidadPersonas { get; set; }
+    }
+
+}

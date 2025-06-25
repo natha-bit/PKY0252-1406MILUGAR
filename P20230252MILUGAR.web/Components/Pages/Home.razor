@@ -1,0 +1,72 @@
+﻿@page "/"
+@using P20230252MILUGAR.web.Data.Dtos
+@using P20230252MILUGAR.web.Data.Services
+@inject IApartamentoServices ApartamentoServices
+
+<section class="portada">
+    <div class="contenido">
+        <h1>Mi hogar</h1>
+        <p>a un clic de distancia</p>
+        <a href="#listado" class="btn btn-explorar">EXPLORAR</a>
+    </div>
+</section>
+
+<section class="w-100 mt-4 px-4">
+    <div class="barra-busqueda">
+        <button class="btn btn-filtros">
+            <i class="bi bi-sliders"></i> FILTROS
+        </button>
+        <input type="text" placeholder="Buscar apartamentos..." />
+    </div>
+</section>
+
+<section id="listado" class="w-100 mt-4 px-4">
+    @if (apartamentos is null)
+    {
+        <p class="text-center">Cargando apartamentos...</p>
+    }
+    else
+    {
+        <div class="row gx-4">
+            @foreach (var apt in apartamentos)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="apartamento-card shadow-sm">
+                        <img src="@ObtenerPrimeraImagen(apt.ImagenUrls)" class="card-img-top" />
+
+                        <div class="card-body">
+                            <h5 class="card-title">@apt.Titulo</h5>
+                            <p class="precio">RD$@apt.PrecioMesual /mes</p>
+                            <p class="card-text">@apt.Descripcion</p>
+                        </div>
+
+                        <div class="card-footer d-flex justify-content-between align-items-center">
+                            <div class="text-muted">
+                                <i class="bi bi-person"></i>
+                                <strong>Publicado por: @apt.PropietarioNombre</strong>
+                            </div>
+                        </div>
+
+                        <div class="card-footer text-center">
+                            <a class="btn-vermas" href="/detalle/@apt.Id">VER MÁS</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</section>
+
+@code {
+    private List<ApartamentoDtos>? apartamentos;
+
+    protected override void OnInitialized()
+    {
+        apartamentos = ApartamentoServices.Consultar();
+    }
+
+    private string ObtenerPrimeraImagen(string urls)
+    {
+        return urls?.Split(',').FirstOrDefault()?.Trim() ?? "images/default.jpg";
+    }
+}

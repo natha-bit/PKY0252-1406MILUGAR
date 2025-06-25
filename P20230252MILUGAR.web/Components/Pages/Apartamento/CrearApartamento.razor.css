@@ -1,0 +1,110 @@
+﻿/* Contenedor general del formulario */
+.crear-apartamento {
+    margin: 40px;
+    padding: 40px 50px;
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Títulos de secciones */
+.form-section h3 {
+    color: #4CAF50;
+    margin-bottom: 20px;
+    font-size: 22px;
+    border-bottom: 2px solid #7ED957;
+    padding-bottom: 5px;
+}
+
+/* Grid de inputs */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+/* Inputs más estilizados */
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 15px;
+    background-color: #f7fdf7;
+    border: 1.5px solid #a2e38f;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+    .form-control:focus {
+        border-color: #7ED957;
+        outline: none;
+        background-color: #ffffff;
+    }
+
+/* Área de subida de imágenes */
+.image-upload-area {
+    border: 2px dashed #7ED957;
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    background-color: #f6fff6;
+    min-height: 160px;
+    margin-top: 16px;
+}
+
+.upload-box {
+    width: 140px;
+    height: 140px;
+    border: 2px dashed #7ED957;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 36px;
+    color: #4CAF50;
+    cursor: pointer;
+    background-color: #ffffff;
+}
+
+    .upload-box:hover {
+        background-color: #eaffea;
+    }
+
+.image-preview-container {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.image-preview {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 2px solid #a7f2a7;
+}
+
+/* Botón */
+.form-actions {
+    text-align: right;
+    margin-top: 30px;
+}
+
+.btn-submit {
+    padding: 12px 30px;
+    font-size: 16px;
+    border-radius: 10px;
+    background-color: #7ED957;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    .btn-submit:hover {
+        background-color: #64c44e;
+    }

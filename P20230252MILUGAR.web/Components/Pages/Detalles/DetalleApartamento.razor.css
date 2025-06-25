@@ -1,0 +1,42 @@
+﻿.Carddd {
+    margin: 30px;
+    
+}
+
+.apartamento-card {
+    margin: 16px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    
+}
+.btnRese {
+    width: 99%;
+    height: 50px;
+    border: 2px solid #00C851; /* verde */
+    color: #00C851;
+    background-color: transparent;
+    border-radius: 25px;
+    padding: 14px 25px;
+    font-weight: 500;
+    margin: 12px;
+    text-align: center;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 8px rgba(0, 200, 81, 0.4);
+}
+    .btnRese:hover {
+        background-color: #00C851;
+        color: white;
+        box-shadow: 0 0 12px rgba(0, 200, 81, 0.6);
+    }
+    .btnRese:disabled {
+        background-color: #ccc !important;
+        color: #666 !important;
+        cursor: not-allowed !important;
+        box-shadow: none !important;
+        border: none !important;
+        opacity: 0.6 !important;
+        pointer-events: none !important;
+        transition: none !important;
+    }
+

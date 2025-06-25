@@ -1,0 +1,13 @@
+header {
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+ul.nav {
+    gap: 1.5rem;
+}
+
+.navbar-brand img {
+    display: block;
+    max-height: 60px;
+}

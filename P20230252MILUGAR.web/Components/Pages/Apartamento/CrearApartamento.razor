@@ -1,0 +1,228 @@
+﻿@page "/Apartamentos"
+@page "/Apartamentos/{id:int?}"
+@inject IApartamentoServices ApartamentoService
+@using P20230252MILUGAR.web.Data.Dtos
+@using P20230252MILUGAR.web.Data.Services
+@rendermode InteractiveServer
+<h3>Crear Apartamento</h3>
+
+@if (!string.IsNullOrEmpty(mensaje))
+{
+    <div>
+        @mensaje
+    </div>
+}
+
+<div class="crear-apartamento">
+    <div class="form-section">
+        <h3>Información del Apartamento</h3>
+        <div class="form-grid">
+            <div>
+                <label>Título</label>
+				<input type="text" @bind="nuevoApartemento.Titulo" class="form-control" />
+            </div>
+
+            <div>
+                <label>Ciudad</label>
+                <input type="text" @bind="nuevoApartemento.Ciudad" class="form-control" />
+            </div>
+            <div>
+                <label>Dirección</label>
+				<input type="text" @bind="nuevoApartemento.Direccion" class="form-control" />
+            </div>
+
+            <div>
+                <label>Área (m²)</label>
+				<input type="number" @bind="nuevoApartemento.Area" class="form-control" />
+            </div>
+
+            <div>
+                <label>Precio Mensual (RD$)</label>
+				<input type="number" @bind="nuevoApartemento.PrecioMesual" class="form-control" />
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h3>Detalles del Apartamento</h3>
+        <div class="form-grid">
+            <div>
+                <label>Número de Habitaciones</label>
+				<input type="number" @bind="nuevoApartemento.NumeroHabitaciones" class="form-control" />
+            </div>
+
+            <div>
+                <label>Número de Baños</label>
+				<input type="number" @bind="nuevoApartemento.NumeroBanios" class="form-control" />
+            </div>
+
+            <div class="full-width">
+                <label>Descripción</label>
+				<input type="text" @bind="nuevoApartemento.Descripcion" class="form-control" />
+            </div>
+
+            <div class="full-width">
+                <label>Servicios Adicionales</label>
+				<input type="text" @bind="nuevoApartemento.ServiciosAdicionales" class="form-control" />
+            </div>
+        </div>
+    </div>
+    <div class="form-section">
+        <h3>Imágenes del Apartamento</h3>
+        <div class="image-upload-area">
+            <label class="upload-box">
+                +
+                <InputFile OnChange="HandleSelectedFiles" multiple style="display: none;" />
+            </label>
+            <div class="image-preview-container">
+                @foreach (var preview in previews)
+                {
+                    <img src="@preview" class="image-preview" />
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button type="button"
+                @onclick="() => GuardarApartamento()"
+                class="btn-submit">
+            @(id.HasValue ? "Guardar Cambios" : "Crear Apartamento")
+        </button>
+    </div>
+
+
+</div>
+
+@code {
+    [Parameter]
+    public int? id { get; set; }
+
+    private ApartamentoDtos apartamento = new();
+    protected override void OnInitialized()
+    {
+        if (id.HasValue)
+        {
+            var apto = ApartamentoService.Consultar().FirstOrDefault(a => a.Id == id.Value);
+            if (apto != null)
+            {
+                nuevoApartemento = apto;
+
+                previews = (apto.ImagenUrls ?? "")
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(url => url.Trim())
+                    .ToList();
+
+                imagenesSubidas = previews.ToList();
+            }
+            else
+            {
+                nuevoApartemento = new ApartamentoDtos();
+                previews.Clear();
+                imagenesSubidas.Clear();
+            }
+        }
+        else
+        {
+            nuevoApartemento = new ApartamentoDtos();
+            previews.Clear();
+            imagenesSubidas.Clear();
+        }
+    }
+
+    private ApartamentoDtos nuevoApartemento = new();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvide.GetAuthenticationStateAsync();
+        var user = authState.User;
+        nuevoApartemento.PropietarioId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    }
+
+
+    private string mensaje = "";
+    private void GuardarApartamento()
+    {
+        if (string.IsNullOrWhiteSpace(nuevoApartemento.ImagenUrls))
+        {
+            mensaje = "Debes subir al menos una imagen.";
+            return;
+        }
+
+        try
+        {
+            bool exito;
+            if (id.HasValue)
+            {
+                exito = ApartamentoService.Modificar(nuevoApartemento);
+                mensaje = exito ? "Apartamento actualizado exitosamente." : "Error al actualizar el apartamento.";
+            }
+            else
+            {
+                exito = ApartamentoService.Crear(nuevoApartemento);
+                mensaje = exito ? "Apartamento agregado exitosamente." : "Error al guardar el apartamento.";
+                if (exito)
+                {
+                    nuevoApartemento = new();
+                    previews.Clear();
+                    imagenesSubidas.Clear();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            mensaje = $"Error inesperado: {ex.Message}";
+            if (ex.InnerException != null)
+            {
+                mensaje += $" Detalle interno: {ex.InnerException.Message}";
+            }
+            Console.WriteLine(ex);
+            if (ex.InnerException != null)
+            {
+                Console.WriteLine(ex.InnerException);
+            }
+        }
+    }
+
+
+    private List<string> previews = new();
+    private List<string> imagenesSubidas = new();
+
+    private async Task HandleSelectedFiles(InputFileChangeEventArgs e)
+    {
+        if (previews.Count >= 4)
+        {
+            mensaje = "Solo puedes subir hasta 4 imágenes.";
+            return;
+        }
+
+        var files = e.GetMultipleFiles(4 - previews.Count); 
+
+        foreach (var file in files)
+        {
+            using var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+            using var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+
+            var fileBytes = ms.ToArray();
+
+            var base64 = Convert.ToBase64String(fileBytes);
+            var dataUrl = $"data:{file.ContentType};base64,{base64}";
+            previews.Add(dataUrl);
+
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
+            var path = Path.Combine(Environment.CurrentDirectory, "wwwroot", "uploads", fileName);
+            await File.WriteAllBytesAsync(path, fileBytes);
+
+            imagenesSubidas.Add($"/uploads/{fileName}");
+        }
+
+        nuevoApartemento.ImagenUrls = string.Join(",", imagenesSubidas);
+        mensaje = "";
+    }
+
+
+
+
+}
