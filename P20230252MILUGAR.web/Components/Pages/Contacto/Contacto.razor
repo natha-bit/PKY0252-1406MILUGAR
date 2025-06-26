@@ -1,0 +1,60 @@
+﻿@page "/contacto"
+
+<PageTitle>Contacto</PageTitle>
+
+<div class="contacto-container">
+    <h2 class="titulo-contacto">¿Tienes alguna pregunta?</h2>
+    <p class="subtitulo-contacto">Estamos aquí para ayudarte. Contáctanos por cualquiera de los siguientes medios:</p>
+
+    <div class="contacto-grid">
+        <!-- Información de contacto -->
+        <div class="contacto-info">
+            <h4>Información de Contacto</h4>
+            <ul>
+                <li><i class="bi bi-telephone-fill"></i> +1 (809) 123-4567</li>
+                <li><i class="bi bi-envelope-fill"></i> <a href="mailto:info@mihogar.com">info@mihogar.com</a></li>
+                <li><i class="bi bi-whatsapp"></i> <a href="https://wa.me/18091234567" target="_blank">Escríbenos por WhatsApp</a></li>
+            </ul>
+        </div>
+
+        <!-- Formulario -->
+        <div class="contacto-formulario">
+            <h4>Envíanos un Mensaje</h4>
+            <EditForm Model="@formulario" OnValidSubmit="EnviarMensaje">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="form-group">
+                    <InputText @bind-Value="formulario.Nombre" class="input-contacto" placeholder="Nombre" />
+                </div>
+
+                <div class="form-group">
+                    <InputText @bind-Value="formulario.Email" class="input-contacto" placeholder="Correo electrónico" />
+                </div>
+
+                <div class="form-group">
+                    <InputTextArea @bind-Value="formulario.Mensaje" class="input-contacto" placeholder="Mensaje" />
+                </div>
+
+                <button type="submit" class="btn-enviar">ENVIAR</button>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    private ContactoDto formulario = new();
+
+    private void EnviarMensaje()
+    {
+        // Aquí iría la lógica de envío (correo, API, etc.)
+        Console.WriteLine($"Mensaje enviado de {formulario.Nombre}");
+    }
+
+    public class ContactoDto
+    {
+        public string Nombre { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string Mensaje { get; set; } = "";
+    }
+}

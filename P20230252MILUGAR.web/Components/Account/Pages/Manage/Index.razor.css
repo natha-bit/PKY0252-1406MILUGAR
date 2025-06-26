@@ -1,0 +1,29 @@
+﻿.form-profile-container {
+    max-width: 500px;
+    margin: 60px auto;
+    padding: 40px 30px;
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 0 14px rgba(0, 0, 0, 0.08);
+}
+
+    .form-profile-container h3 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #2b2b2b;
+    }
+
+    .form-profile-container .form-control {
+        background-color: #f8fff8;
+        border: 2px solid #7ed957;
+        border-radius: 8px;
+        padding: 14px;
+        font-size: 16px;
+    }
+
+    .form-profile-container button {
+        margin-top: 10px;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 8px;
+    }

@@ -221,26 +221,25 @@
 }
 
 .badge-estado {
-    padding: 5px 12px;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 13px;
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-weight: bold;
     display: inline-block;
 }
 
     .badge-estado.pendiente {
-        background-color: #ffeb99;
-        color: #7a5e00;
+        background-color: #ffc107; /* Amarillo */
+        color: #000;
     }
 
     .badge-estado.aceptada {
-        background-color: #c8f7c5;
-        color: #2e7d32;
+        background-color: #28a745; /* Verde */
+        color: #fff;
     }
 
-    .badge-estado.rechazada {
-        background-color: #ffcaca;
-        color: #9e1e1e;
+    .badge-estado.cancelada {
+        background-color: #dc3545; /* Rojo */
+        color: #fff;
     }
 
 .boton-vermas {
@@ -321,3 +320,43 @@
     .btn-borrar:hover {
         background-color: #e63946;
     }
+
+
+
+.notificacion-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.btn-reserva-noti {
+    background-color: #ffd43b;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+    .btn-reserva-noti:hover {
+        background-color: #f0c030;
+    }
+
+.notificacion-contador {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    font-size: 12px;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    font-weight: bold;
+}

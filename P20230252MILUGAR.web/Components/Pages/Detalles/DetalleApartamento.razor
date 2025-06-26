@@ -154,18 +154,16 @@
             ApartamentoId = apartamento.Id
         };
 
-        var reservaCreada = ReservaService.Crear(reserva);
+        var idReservaCreada = ReservaService.Crear(reserva);
 
-        if (reservaCreada != null)
+        if (idReservaCreada > 0)
         {
             mensaje = "Reserva creada correctamente.";
-            StateHasChanged();
-            Navigation.NavigateTo($"/reserva/detalle/{reserva.Id}");
+            Navigation.NavigateTo($"/reserva/detalle/{idReservaCreada}");
         }
         else
         {
             mensaje = "Error al crear la reserva.";
-            StateHasChanged();
         }
     }
 }

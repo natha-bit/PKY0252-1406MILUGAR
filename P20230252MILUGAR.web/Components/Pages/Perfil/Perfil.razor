@@ -25,7 +25,7 @@
         <div>
             <h2>@Nombre</h2>
             <p class="rol">@Rol</p>
-            <button type="button" class="btn-editar">✏️ EDITAR PERFIL</button>
+            <button type="button" class="btn-editar" @onclick="IrModficar">✏️ EDITAR PERFIL</button>
         </div>
         @if (isAuthenticated)
         {
@@ -48,7 +48,7 @@
             <li><span>📧</span>@Email</li>
             <li><span>📞</span> @Telefono</li>
         </ul>
-        <a class="link-cambiar">🔑 Cambiar contraseña</a>
+        <a href="/Account/Manage/ChangePassword" class="link-cambiar">🔑 Cambiar contraseña</a>
     </div>
 
 
@@ -79,6 +79,15 @@
                     <p>Estado: @(ap.Disponibilidad ? "Publicado" : "No disponible")</p>
                     <p>Visitas: (poner visitas si lo manejas)</p>
                     <div class="publicacion-actions-vertical">
+                            <div class="notificacion-wrapper">
+                                <button class="btn-reserva-noti" title="Ver reservas pendientes" @onclick="() => MostrarReservasDelApartamento(ap.Id)">
+                                    🔔
+                                </button>
+                                @if (ReservasPorApartamento.ContainsKey(ap.Id) && ReservasPorApartamento[ap.Id].Any())
+                                {
+                                    <span class="notificacion-contador">@ReservasPorApartamento[ap.Id].Count</span>
+                                }
+                            </div>
                         <button class="btn-editar" title="Editar" @onclick="() => EditarApartamento(ap.Id)">
                             ✏️
                         </button>
@@ -86,6 +95,34 @@
                             🗑️
                         </button>
                     </div>
+                    <br>
+                        @if (apartamentoConReservasId == ap.Id && ReservasPorApartamento.ContainsKey(ap.Id))
+                        {
+                            var reservas = ReservasPorApartamento[ap.Id];
+
+                            if (reservas.Count == 0)
+                            {
+                                <p style="margin-left: 15px;">No hay reservas pendientes para este apartamento.</p>
+                            }
+                            else
+                            {
+                                <div class="reservas-pendientes mt-2" style="margin-left: 15px;">
+                                    @foreach (var reserva in reservas)
+                                    {
+                                        <div class="card p-3 mb-2">
+                                            <p><strong>Usuario:</strong> @reserva.NombreUsuario</p>
+                                            <p><strong>Fecha:</strong> @reserva.FechaSolicitud.ToString("dd/MM/yyyy hh:mm tt")</p>
+                                            <div>
+                                                <button class="btn btn-success me-2" @onclick="@(() => CambiarEstadoReserva(reserva.Id, "Aceptada"))">Aceptar</button>
+                                                <button class="btn btn-danger" @onclick="@(() => CambiarEstadoReserva(reserva.Id, "Cancelada"))">
+                                                    Cancelar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        }
                 </div>
 
             }
@@ -106,10 +143,17 @@
                 <div class="reserva-card">
                     <div class="reserva-info">
                         <div>
-                            <p><strong>Apartamento:</strong> SDA</p>
+                            <p class="rol">
+                                @Rol
+                                @if (notificacionesCliente > 0)
+                                {
+                                    <span class="notificacion-punto">🔴</span>
+                                }
+                            </p>
+                            <p><strong>Apartamento:</strong> @reserva.NombreApartamento</p>
                             <p>
                                 <strong>Estado:</strong>
-                                <span class="badge-estado pendiente">Pendiente</span>
+                                <span class="badge-estado @reserva.Estado.ToLower()">@reserva.Estado</span>
                             </p>
                         </div>
 
@@ -141,6 +185,8 @@
 
 
 @code {
+    private int? apartamentoConReservasId = null;
+    private Dictionary<int, List<ReservaDtos>> ReservasPorApartamento = new();
     private string? currentUrl;
     private string? Nombre;
     private string? Email;
@@ -151,9 +197,28 @@
     private List<ReservaDtos> MisReservas = new();
 
 
+
+    private int notificacionesCliente = 0;
+    private int notificacionesVendedor = 0;
+
+
     protected override async Task OnInitializedAsync()
     {
+        notificacionesCliente = MisReservas
+        .Count(r => r.Estado == "Aceptada" || r.Estado == "Cancelada");
 
+        if (esVendedor)
+        {
+            foreach (var apartamento in MisApartamentos)
+            {
+                var reservas = await ReservaService.ConsultarPorApartamentoIdAsync(apartamento.Id);
+                var pendientes = reservas.Where(r => r.Estado == "Pendiente").Count();
+                if (pendientes > 0)
+                {
+                    notificacionesVendedor += pendientes;
+                }
+            }
+        }
         currentUrl = Navigation.ToBaseRelativePath(Navigation.Uri);
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
@@ -173,7 +238,16 @@
 
                 MisApartamentos = ApartamentoService.ConsultarPorUsuarioId(appUser.Id);
                 MisReservas = await ReservaService.CosultarId(appUser.Id);
-                MisReservas = MisReservas.Where(r => r.Estado != "Cancelada").ToList();
+
+                foreach (var ap in MisApartamentos)
+{
+    var reservas = await ReservaService.ConsultarPorApartamentoIdAsync(ap.Id);
+    ReservasPorApartamento[ap.Id] = reservas
+        .Where(r => r.Estado == "Pendiente")
+        .ToList();
+}
+
+                
             }
         }
     }
@@ -213,8 +287,12 @@
     {
         Navigation.NavigateTo("Apartamentos");
     }
+    private void IrModficar()
+    {
+        Navigation.NavigateTo("/Account/Manage");
+    }
 
-
+    
     private void EditarApartamento(int id)
     {
         Navigation.NavigateTo($"/Apartamentos/{id}");
@@ -247,6 +325,33 @@
     private void IrADetalleReserva(int reservaId)
     {
         Navigation.NavigateTo($"/reserva/detalle/{reservaId}");
+    }
+
+    private async Task CambiarEstadoReserva(int reservaId, string nuevoEstado)
+    {
+        await ReservaService.ActualizarEstadoReservaAsync(reservaId, nuevoEstado);
+
+        if (apartamentoConReservasId.HasValue)
+        {
+            await MostrarReservasDelApartamento(apartamentoConReservasId.Value);
+        }
+    }
+
+    private async Task MostrarReservasDelApartamento(int apartamentoId)
+    {
+        if (apartamentoConReservasId == apartamentoId)
+        {
+            apartamentoConReservasId = null;
+            return;
+        }
+
+        var reservas = await ReservaService.ConsultarPorApartamentoIdAsync(apartamentoId);
+
+        ReservasPorApartamento[apartamentoId] = reservas
+            .Where(r => r.Estado == "Pendiente")
+            .ToList();
+
+        apartamentoConReservasId = apartamentoId;
     }
 
 

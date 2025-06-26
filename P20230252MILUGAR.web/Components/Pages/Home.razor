@@ -2,6 +2,8 @@
 @using P20230252MILUGAR.web.Data.Dtos
 @using P20230252MILUGAR.web.Data.Services
 @inject IApartamentoServices ApartamentoServices
+@inject IReservaServices ReservaService
+
 
 <section class="portada">
     <div class="contenido">
@@ -60,9 +62,24 @@
 @code {
     private List<ApartamentoDtos>? apartamentos;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        apartamentos = ApartamentoServices.Consultar();
+        var todos = ApartamentoServices.Consultar();
+
+        // Cargar todas las reservas aceptadas
+        var reservas = await ReservaService.ConsultarTodasAsync();
+
+        // Obtener los IDs de apartamentos con reserva aceptada
+        var idsReservados = reservas
+            .Where(r => r.Estado == "Aceptada")
+            .Select(r => r.ApartamentoId)
+            .Distinct()
+            .ToList();
+
+        // Filtrar los apartamentos que NO están en esa lista
+        apartamentos = todos
+            .Where(a => !idsReservados.Contains(a.Id))
+            .ToList();
     }
 
     private string ObtenerPrimeraImagen(string urls)

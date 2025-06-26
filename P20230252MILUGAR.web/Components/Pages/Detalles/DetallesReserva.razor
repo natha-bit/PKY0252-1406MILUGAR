@@ -14,6 +14,17 @@
     private ApartamentoDtos? apartamento;
     private ApplicationUser? propietario;
 
+    private string ObtenerClaseEstado(string estado)
+    {
+        return estado switch
+        {
+            "Pendiente" => "bg-warning text-dark",
+            "Cancelada" => "bg-danger",
+            "Aceptada" => "bg-success",
+            _ => "bg-secondary"
+        };
+    }
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -51,7 +62,7 @@ else
 
         <p>
             <strong>Estado actual:</strong>
-            <span class="badge @(reserva.Estado == "Pendiente" ? "bg-warning text-dark" : "bg-success")">
+            <span class="badge @ObtenerClaseEstado(reserva.Estado)">
                 @reserva.Estado
             </span>
         </p>
