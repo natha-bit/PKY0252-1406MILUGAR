@@ -4,14 +4,13 @@
 @using P20230252MILUGAR.web.Data.Dtos
 @using P20230252MILUGAR.web.Data.Services
 @rendermode InteractiveServer
-<h3>Crear Apartamento</h3>
-
 @if (!string.IsNullOrEmpty(mensaje))
 {
-    <div>
+    <div class="toast-message">
         @mensaje
     </div>
 }
+
 
 <div class="crear-apartamento">
     <div class="form-section">
@@ -147,6 +146,12 @@
         if (string.IsNullOrWhiteSpace(nuevoApartemento.ImagenUrls))
         {
             mensaje = "Debes subir al menos una imagen.";
+            StateHasChanged();
+            _ = Task.Delay(4000).ContinueWith(_ =>
+            {
+                mensaje = "";
+                InvokeAsync(StateHasChanged);
+            });
             return;
         }
 
@@ -157,6 +162,7 @@
             {
                 exito = ApartamentoService.Modificar(nuevoApartemento);
                 mensaje = exito ? "Apartamento actualizado exitosamente." : "Error al actualizar el apartamento.";
+
             }
             else
             {
@@ -169,6 +175,12 @@
                     imagenesSubidas.Clear();
                 }
             }
+            StateHasChanged();
+            _ = Task.Delay(4000).ContinueWith(_ =>
+            {
+                mensaje = "";
+                InvokeAsync(StateHasChanged);
+            });
         }
         catch (Exception ex)
         {

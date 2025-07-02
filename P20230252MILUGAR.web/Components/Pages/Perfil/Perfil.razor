@@ -77,7 +77,6 @@
                 <div class="publicacion" style="position: relative;">
                     <p><strong>@ap.Titulo</strong></p>
                     <p>Estado: @(ap.Disponibilidad ? "Publicado" : "No disponible")</p>
-                    <p>Visitas: (poner visitas si lo manejas)</p>
                     <div class="publicacion-actions-vertical">
                             <div class="notificacion-wrapper">
                                 <button class="btn-reserva-noti" title="Ver reservas pendientes" @onclick="() => MostrarReservasDelApartamento(ap.Id)">

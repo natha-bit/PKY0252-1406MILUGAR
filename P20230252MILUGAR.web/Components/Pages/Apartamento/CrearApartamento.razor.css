@@ -108,3 +108,25 @@
     .btn-submit:hover {
         background-color: #64c44e;
     }
+
+.toast-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #4caf50;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    font-size: 1.2rem;
+    z-index: 1000;
+    animation: fadeOut 0.5s ease-in-out 3s forwards;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
